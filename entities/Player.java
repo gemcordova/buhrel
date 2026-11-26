@@ -1,9 +1,5 @@
 package entities;
 
-import static utilz.Constants.Direction.UP;
-import static utilz.Constants.Direction.LEFT;
-import static utilz.Constants.Direction.DOWN;
-import static utilz.Constants.Direction.RIGHT;
 import static utilz.Constants.PlayerConstants.*;
 
 import java.awt.Graphics;
@@ -16,9 +12,10 @@ public class Player extends Entity{
     private BufferedImage[][] animations;
     private int aniTick, aniIndex, aniSpeed = 15;
     private int playerAction = DOUBLE_JUMP;
-    private int playerDir = -1;
-    private boolean moving = false;
+    private boolean moving = false, attacking = false;
     private int previousAction = -1;
+    private boolean up, left, down, right;
+    private float playerSpeed = 2.0f;
 
     public Player(float x, float y) {
         super(x, y);
@@ -26,22 +23,13 @@ public class Player extends Entity{
     }
     
     public void update() {
+        updatePos();
         updateAnimationTick();
         setAnimation();
-        updatePos();
     }
 
     public void render(Graphics g) {
         g.drawImage(animations[playerAction][aniIndex], (int)x, (int)y, 48*2, 48*2, null);
-    }
-
-    public void setDirection(int direction) {
-        this.playerDir = direction;
-        moving = true;
-    }
-
-    public void setMoving(boolean moving) {
-        this.moving = moving;
     }
 
     private void updateAnimationTick() {
@@ -51,42 +39,56 @@ public class Player extends Entity{
             aniTick = 0;
             aniIndex++;
 
-            if(aniIndex >= GetSpriteAmount(playerAction))
+            if(aniIndex >= GetSpriteAmount(playerAction)) {
                 aniIndex = 0;
+                attacking = false;
+            }   
         }
     }
 
     public void setAnimation() {
+        int startAni = playerAction;
+
         if (moving)
             playerAction = RUN;
         else
             playerAction = IDLE;
+
+        if(attacking)
+            playerAction = ATTACK_3;
 
         if (playerAction != previousAction) {
             aniIndex = 0;
             aniTick = 0;
             previousAction = playerAction;
         }
+
+        if(startAni != playerAction) 
+            resetAniTick();
+    }
+
+    private void resetAniTick() {
+        aniTick = 0;
+        aniIndex = 0;
     }
 
     private void updatePos() {
-        if(moving) {
-            switch (playerDir) {
-                case UP:
-                    y -= 5;
-                    break;
-                case LEFT:
-                    x -= 5;
-                    break;
-                case DOWN:
-                    y += 5;
-                    break;
-                case RIGHT:
-                    x += 5;
-                    break;
-                default:
-                    break;
-            }
+        moving = false;
+
+        if(left && !right) {
+            x -= playerSpeed;
+            moving = true;
+        } else if(right && !left) {
+            x += playerSpeed;
+            moving = true;
+        }
+
+        if(up && !down) {
+            y -= playerSpeed;
+            moving = true;
+        } else if(down && !up) {
+            y += playerSpeed;
+            moving = true;
         }
     }
 
@@ -108,5 +110,48 @@ public class Player extends Entity{
                 e.printStackTrace();
             }
         }
+    }
+
+    public void resetDirBoolean() {
+        up = false;
+        left = false;
+        down = false;
+        right = false;
+    }
+
+    public void setAttacking(boolean attacking) {
+        this.attacking = attacking;
+    }
+
+    public boolean isUp() {
+        return up;
+    }
+
+    public void setUp(boolean up) {
+        this.up = up;
+    }
+
+    public boolean isLeft() {
+        return left;
+    }
+
+    public void setLeft(boolean left) {
+        this.left = left;
+    }
+
+    public boolean isDown() {
+        return down;
+    }
+
+    public void setDown(boolean down) {
+        this.down = down;
+    }
+
+    public boolean isRight() {
+        return right;
+    }
+
+    public void setRight(boolean right) {
+        this.right = right;
     }
 }
