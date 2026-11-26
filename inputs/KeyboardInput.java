@@ -3,30 +3,21 @@ package inputs;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import main.GamePanel;
-import static utilz.Constants.Direction.*;
+import static utilz.Constants.Direction.UP;
+import static utilz.Constants.Direction.LEFT;
+import static utilz.Constants.Direction.DOWN;
+import static utilz.Constants.Direction.RIGHT;
 
 public class KeyboardInput implements KeyListener{
     private GamePanel gamePanel;
+
     public KeyboardInput(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
     }
 
     @Override
-    public void keyPressed(KeyEvent e) {
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_W:
-                gamePanel.setDirection(UP);
-                break;
-            case KeyEvent.VK_A: 
-                gamePanel.setDirection(LEFT);
-                break;
-            case KeyEvent.VK_S:
-                gamePanel.setDirection(DOWN);
-                break;
-            case KeyEvent.VK_D:
-                gamePanel.setDirection(RIGHT);
-                break;
-        }
+    public void keyTyped(KeyEvent e) {
+
     }
 
     @Override
@@ -36,14 +27,26 @@ public class KeyboardInput implements KeyListener{
             case KeyEvent.VK_A: 
             case KeyEvent.VK_S:
             case KeyEvent.VK_D:
-                gamePanel.setMoving(false);
+                gamePanel.getGame().getPlayer().setMoving(false);
                 break;
         }
     }
 
     @Override
-    public void keyTyped(KeyEvent e) {
-
+    public void keyPressed(KeyEvent e) {
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_W:
+                gamePanel.getGame().getPlayer().setDirection(UP);
+                break;
+            case KeyEvent.VK_A: 
+                gamePanel.getGame().getPlayer().setDirection(LEFT);
+                break;
+            case KeyEvent.VK_S:
+                gamePanel.getGame().getPlayer().setDirection(DOWN);
+                break;
+            case KeyEvent.VK_D:
+                gamePanel.getGame().getPlayer().setDirection(RIGHT);
+                break;
+        }
     }
-    
 }
